@@ -1,2 +1,2 @@
-# uBlox
-uBlox is a class that is an abstraction of IoT communication and GNSS modules,  chips and services supporting the industrial
+# uCan
+uCan is an abstraction of a bidirectional serial communication protocol that uses a two-wire system to connect different devices.
