@@ -1,0 +1,8 @@
+{
+  "name": "uCan",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:upacks/uCan.git",
+  "author": "Gantulga Khuyag <gantulgak@ot.mn>",
+  "license": "MIT"
+}
