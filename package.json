@@ -1,8 +1,35 @@
 {
-  "name": "uCan",
+  "name": "ucan",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "git@github.com:upacks/uCan.git",
-  "author": "Gantulga Khuyag <gantulgak@ot.mn>",
-  "license": "MIT"
+  "author": "gantulga.khuyag@gmail.com",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "ts-module": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "ts-import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "start": "nodemon --delay 0.25 ./src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "postinstall": "(node -e \"if (! require('fs').existsSync('../typescript/bin/tsc')){process.exit(1)} \" && ../typescript/bin/tsc -p tsconfig.json) || exit 0;"
+  },
+  "dependencies": {
+    "serialport": "^11.0.0",
+    "utils": "upacks/utils"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.194",
+    "@types/node": "^18.11.18",
+    "@types/shelljs": "^0.8.12",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
 }
