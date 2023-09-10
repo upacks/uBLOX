@@ -1,5 +1,5 @@
 import { ReadlineParser, SerialPort } from 'serialport'
-import { CommandExists, log, PackageExists, Safe, Since } from 'utils'
+import { log, PackageExists, Safe, Since } from 'utils'
 
 type iMessage = 'success' | 'info' | 'error' | 'warning' | 'loading'
 
@@ -9,16 +9,21 @@ export class Serial {
     public port
     public parser
 
-    public onInfo = (msg: iMessage) => { }
+    public onInfo = (type: iMessage, _log: { type: string, message: string }) => log[_log.type](_log.message)
 
-    constructor() {
-        // this.start(path, baud)
-    }
+    constructor() { }
+
+    check = () => Safe(() => {
+
+        log.info(`${this.alias}: Checking required modules ...`)
+        log[PackageExists('serialport') ? 'success' : 'warn']('+ SerialPort')
+
+    })
 
     start = (path: string, baud: number) => {
 
         this.alias = `Serial [${path}:${baud}]`
-        log.success(`${this.alias}: Connecting ...`) && this.onInfo('loading')
+        this.onInfo('loading', { type: 'success', message: `${this.alias}: Connecting ...` })
 
         const restart = new Since(5000)
 
@@ -30,40 +35,43 @@ export class Serial {
             this.port.open()
         }))
 
-        this.port.on('open', () => log.success(`${this.alias}: On.Open is called!`) && this.onInfo('success'))
+        this.port.on('open', () => {
+            this.onInfo('success', { type: 'success', message: `${this.alias}: On.Open is called!` })
+        })
 
         this.port.on('close', () => {
-            log.warn(`${this.alias}: On.Close is called!`) && this.onInfo('warning')
+            this.onInfo('warning', { type: 'warn', message: `${this.alias}: On.Close is called!` })
             restart.add()
         })
 
         this.port.on('error', (err) => {
-            log.error(`${this.alias}: On.Error is called / ${err.message ?? 'Unknown'}`) && this.onInfo('error')
+            this.onInfo('error', { type: 'error', message: `${this.alias}: On.Error is called / ${err.message ?? 'Unknown'}` })
             restart.add()
         })
 
     }
 
-    on = (cb) => { this.parser.on('data', cb) }
+    on = (cb) => {
+        try {
+            this.parser.on('data', cb)
+        } catch (err: any) {
+            this.onInfo('error', { type: 'error', message: `${this.alias}: While reading / ${err.message}` })
+        }
+    }
 
-    emit = (data) => this.port.write(data)
-
-    check = () => Safe(() => {
-
-        log.info(`${this.alias}: Just checking the modules ...`)
-        log[CommandExists('python') ? 'success' : 'warn']('+ Python')
-        log[CommandExists('python3') ? 'success' : 'warn']('+ Python3')
-        log[CommandExists('gcc') ? 'success' : 'warn']('+ GCC')
-        log[PackageExists('serialport') ? 'success' : 'warn']('+ SerialPort')
-
-    })
+    emit = (data) => {
+        try {
+            this.port.write(data)
+        } catch (err: any) {
+            this.onInfo('error', { type: 'error', message: `${this.alias}: While writing / ${err.message}` })
+        }
+    }
 
     close = () => {
         try {
             this.port.close()
-            log.success(`${this.alias}: Close(x) is executed!`)
         } catch (err: any) {
-            log.success(`${this.alias}: While executing Close(x) / ${err.message}`)
+            this.onInfo('error', { type: 'error', message: `${this.alias}: While closing / ${err.message}` })
         }
     }
 

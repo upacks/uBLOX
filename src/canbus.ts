@@ -19,13 +19,11 @@ export class Can {
 
     check = () => Safe(() => {
 
-        const python = CommandExists('python')
-        const python3 = CommandExists('python3')
-        const gcc = CommandExists('gcc')
-
-        log[python ? 'success' : 'warn']('Python')
-        log[python3 ? 'success' : 'warn']('Python3')
-        log[gcc ? 'success' : 'warn']('GCC')
+        log.info(`${this.alias}: Just checking the modules ...`)
+        log[CommandExists('python') ? 'success' : 'warn']('+ Python')
+        log[CommandExists('python3') ? 'success' : 'warn']('+ Python3')
+        log[CommandExists('gcc') ? 'success' : 'warn']('+ GCC')
+        log[PackageExists('serialport') ? 'success' : 'warn']('+ SerialPort')
 
     })
 

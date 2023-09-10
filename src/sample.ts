@@ -3,11 +3,12 @@ import { Serial } from './serial'
 
 Safe(() => {
 
-    const serial = new Serial()
-    serial.onInfo = (sms) => {
-        log.info(` ---> ${sms}`)
-    }
-    serial.start('/dev/ttyS0', 115200)
-    serial.check()
+    const GPS1 = new Serial()
+    GPS1.start('/dev/uGPS1', 115200)
+    GPS1.on((chunk: any) => { log.info(`GPS1 -> ${chunk}`) })
+
+    const GPS2 = new Serial()
+    GPS2.start('/dev/uGPS2', 115200)
+    GPS2.on((chunk: any) => { log.info(`GPS2 -> ${chunk}`) })
 
 })
