@@ -1,2 +1,3 @@
-export * from './canbus'
 export * from './serial'
+
+require.main === module && require('./sample')

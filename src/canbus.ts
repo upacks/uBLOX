@@ -1,10 +1,10 @@
-import can from 'socketcan'
-import { CommandExists, log, Safe } from 'utils'
-
 /**
  * Linux: https://github.com/linux-can/can-utils
  * Node: https://github.com/sebi2k1/node-can
  */
+
+/* import can from 'socketcan'
+import { CommandExists, log, Safe } from 'utils'
 
 export class Can {
 
@@ -35,4 +35,4 @@ export class Can {
 
     close = () => this.channel.stop()
 
-}
+} */
