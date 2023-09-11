@@ -1,5 +1,5 @@
 import { ReadlineParser, SerialPort } from 'serialport'
-import { log, PackageExists, Safe, Since } from 'utils'
+import { Delay, log, PackageExists, Safe, Since } from 'utils'
 
 type iMessage = 'success' | 'info' | 'error' | 'warning' | 'loading'
 
@@ -25,14 +25,18 @@ export class Serial {
         this.alias = `Serial [${path}:${baud}]`
         this.onInfo('loading', { type: 'success', message: `${this.alias}: Connecting ...` })
 
-        const restart = new Since(5000)
+        const restart = new Since(10 * 1000)
 
         this.port = new SerialPort({ path, baudRate: baud })
         this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
 
         restart.call(() => Safe(() => {
-            this.port.close()
-            this.port.open()
+
+            Delay(() => this.onInfo('loading', { type: 'warn', message: `${this.alias}: Trying to close ...` }), 1000)
+            Delay(() => this.port.close(), 2000)
+            Delay(() => this.onInfo('loading', { type: 'info', message: `${this.alias}: Trying to open ...` }), 3000)
+            Delay(() => this.port.open(), 4000)
+
         }))
 
         this.port.on('open', () => {
