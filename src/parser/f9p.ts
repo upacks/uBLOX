@@ -1,8 +1,36 @@
-const NMEA = require('nmea-simple')
+import { log } from 'utils'
 const utmObj = require('utm-latlng')
-const UTM = new utmObj('WGS 84')
+export const NMEA = require('nmea-simple')
+export const UTM = new utmObj('WGS 84')
 
-import { log, PackageExists, Safe, Since } from 'utils'
+/**
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} z 
+ * @returns Array
+ * 0. Array of UTM
+ * 1. Array of LatLon
+ * 2. Object of UTM
+ * 3. Object of LatLon
+ * Coordinate(x EAST LATITUDE, y NORTH LONGITUDE, z ELEVATION (Meters))
+ */
+export const Coordinate = (...n) => {
+    try {
+
+        const { x, y, z } = n.length === 3 ? { x: n[0], y: n[1], z: n[2] } : { x: n[0].x, y: n[0].y, z: n[0].z }
+
+        if (x < 181 && y < 181) {
+            const { Easting, Northing } = UTM.convertLatLngToUtm(x, y, 2)
+            return [[Easting, Northing, z], [y, x, z], { x: Easting, y: Northing, z }, { y, x, z }]
+        } else {
+            const { lat, lng } = UTM.convertUtmToLatLng(x, y, "48", "T")
+            return [[x, y, z], [lng, lat, z], { x, y, z }, { x: lng, y: lat, z }]
+        }
+
+    } catch (err) {
+        return [[0, 0, 0], [0, 0, 0], { x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }]
+    }
+}
 
 const defaultGPS = (path: string) => ({
     GNGGA: {
