@@ -49,8 +49,11 @@ export class Serial {
         })
 
         this.port.on('error', (err) => {
-            this.onInfo('error', { type: 'error', message: `${this.alias}: On.Error is called / ${err.message ?? 'Unknown'}` })
+
+            const message = typeof err.message === 'string' ? err.message.replace('Error: ', '') : 'Unknown error'
+            this.onInfo('error', { type: 'error', message: `${this.alias}: ${message}` })
             restart.add()
+
         })
 
     }
