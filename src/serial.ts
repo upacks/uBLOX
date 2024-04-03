@@ -40,12 +40,17 @@ export class Serial {
         }))
 
         this.port.on('open', () => {
+
             this.onInfo('success', { type: 'success', message: `${this.alias}: On.Open is called!` })
+            restart.last = 0
+
         })
 
         this.port.on('close', () => {
+
             this.onInfo('warning', { type: 'warn', message: `${this.alias}: On.Close is called!` })
             restart.add()
+
         })
 
         this.port.on('error', (err) => {
